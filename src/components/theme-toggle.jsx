@@ -9,7 +9,6 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Evitar problemas de hidratación
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -28,7 +27,7 @@ export function ThemeToggle() {
     <Button
       variant="outline"
       size="sm"
-      className="h-9 w-9 px-0 hover:bg-primary/10 transition-all hover:scale-110"
+      className="h-9 w-9 px-0 hover:bg-primary/10 transition-all hover:scale-110 border-primary/20 hover:border-primary/50"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       title={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
     >

@@ -74,7 +74,7 @@ const translations = {
       email: "Email",
       subject: "Asunto",
       message: "Mensaje",
-      namePlaceholder: "Tu nombre",
+      namePlaceholder: "Danyelle Giraldo",
       emailPlaceholder: "tu@email.com",
       subjectPlaceholder: "Asunto del mensaje",
       messagePlaceholder: "Tu mensaje...",
