@@ -37,42 +37,69 @@ export default function Portfolio() {
   const [educationList, setEducationList] = useState([])
   const [cvData, setCvData] = useState(getCvData("es"))
   const [softSkills, setSoftSkills] = useState(getSoftSkills("es"))
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
+  const [status, setStatus] = useState('')
+
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setStatus('enviando')
+
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/danyellesgiraldoj@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await res.json()
+      if (data.success === 'true') {
+        setStatus('enviado')
+        setFormData({ name: '', email: '', subject: '', message: '' })
+      } else {
+        setStatus('error')
+      }
+    } catch (error) {
+      setStatus('error')
+    }
+  }
 
   useEffect(() => {
-    // Función para cargar el idioma y los datos relacionados
     const loadLanguageData = () => {
-      // Recuperar preferencia de idioma del localStorage
       const savedLanguage = localStorage.getItem("language") || "es"
 
-      console.log("Cargando idioma:", savedLanguage) // Para depuración
-
-      // Actualizar estados
       setLanguage(savedLanguage)
       setT(getTranslations(savedLanguage))
 
-      // Cargar proyectos según el idioma actual
       const currentProjects = getProjects(savedLanguage)
-      console.log(`Proyectos cargados (${savedLanguage}):`, currentProjects.length) // Para depuración
       setProjectsList(currentProjects)
 
-      // Cargar datos de educación según el idioma actual
       const currentEducation = getEducation(savedLanguage)
-      console.log(`Datos de educación cargados (${savedLanguage}):`, currentEducation.length) // Para depuración
       setEducationList(currentEducation)
 
-      // Cargar datos del CV según el idioma actual
       const currentCvData = getCvData(savedLanguage)
       setCvData(currentCvData)
 
-      // Cargar habilidades blandas según el idioma actual
       const currentSoftSkills = getSoftSkills(savedLanguage)
       setSoftSkills(currentSoftSkills)
     }
 
-    // Cargar datos iniciales
     loadLanguageData()
 
-    // Observador de intersección para detectar secciones visibles
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -84,34 +111,26 @@ export default function Portfolio() {
       { threshold: 0.5 },
     )
 
-    // Observar todas las secciones
     document.querySelectorAll("section[id]").forEach((section) => {
       observer.observe(section)
     })
 
-    // Escuchar cambios de idioma
     const handleLanguageChange = (event) => {
-      // Si el evento tiene detail, usar esa información
       if (event.detail && event.detail.language) {
         const newLang = event.detail.language
-        console.log("Cambio de idioma detectado:", newLang) // Para depuración
 
         setLanguage(newLang)
         setT(getTranslations(newLang))
 
         const newProjects = getProjects(newLang)
-        console.log(`Nuevos proyectos (${newLang}):`, newProjects.length) // Para depuración
         setProjectsList(newProjects)
 
         const newEducation = getEducation(newLang)
-        console.log(`Nuevos datos de educación (${newLang}):`, newEducation.length) // Para depuración
         setEducationList(newEducation)
 
-        // Actualizar datos del CV
         const newCvData = getCvData(newLang)
         setCvData(newCvData)
 
-        // Actualizar habilidades blandas
         const newSoftSkills = getSoftSkills(newLang)
         setSoftSkills(newSoftSkills)
       }
@@ -125,7 +144,6 @@ export default function Portfolio() {
     }
   }, [])
 
-  // Variantes para animaciones
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -154,7 +172,6 @@ export default function Portfolio() {
     { href: "#contacto", label: t.nav?.contact || "Contacto" },
   ]
 
-  // Función para renderizar el icono correcto para habilidades blandas
   const renderSoftSkillIcon = (iconName) => {
     switch (iconName) {
       case "users":
@@ -387,7 +404,7 @@ export default function Portfolio() {
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="transition-all">
                   <Button variant="outline" size="icon" asChild>
-                    <a href="mailto:tu@email.com">
+                    <a href="mailto:danyellesgiraldoj@gmail.com">
                       <Mail className="h-5 w-5" />
                       <span className="sr-only">Email</span>
                     </a>
@@ -685,66 +702,130 @@ export default function Portfolio() {
           <div className="max-w-2xl mx-auto">
             <motion.h2 className="text-3xl font-bold mb-10 text-center" variants={fadeIn}>
               <span className="relative">
-                {t.contact?.title || "Contáctame"}
+                {t.contact?.title || 'Contáctame'}
                 <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-primary rounded-full"></span>
               </span>
             </motion.h2>
-            <motion.form className="space-y-6" variants={staggerContainer}>
+            <motion.form onSubmit={handleSubmit} className="space-y-6" variants={staggerContainer}>
               <div className="grid md:grid-cols-2 gap-6">
                 <motion.div className="space-y-2" variants={fadeIn}>
                   <label htmlFor="name" className="text-sm font-medium">
-                    {t.contact?.name || "Nombre"}
+                    {t.contact?.name || 'Nombre'}
                   </label>
                   <input
                     id="name"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-                    placeholder={t.contact?.namePlaceholder || "Danyelle Giraldo"}
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    placeholder={t.contact?.namePlaceholder || 'Danyelle Giraldo'}
                   />
                 </motion.div>
                 <motion.div className="space-y-2" variants={fadeIn}>
                   <label htmlFor="email" className="text-sm font-medium">
-                    {t.contact?.email || "Email"}
+                    {t.contact?.email || 'Email'}
                   </label>
                   <input
                     id="email"
+                    name="email"
                     type="email"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-                    placeholder={t.contact?.emailPlaceholder || "tu@email.com"}
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    placeholder={t.contact?.emailPlaceholder || 'tu@email.com'}
                   />
                 </motion.div>
               </div>
               <motion.div className="space-y-2" variants={fadeIn}>
                 <label htmlFor="subject" className="text-sm font-medium">
-                  {t.contact?.subject || "Asunto"}
+                  {t.contact?.subject || 'Asunto'}
                 </label>
                 <input
                   id="subject"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-                  placeholder={t.contact?.subjectPlaceholder || "Asunto del mensaje"}
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  placeholder={t.contact?.subjectPlaceholder || 'Asunto del mensaje'}
                 />
               </motion.div>
               <motion.div className="space-y-2" variants={fadeIn}>
                 <label htmlFor="message" className="text-sm font-medium">
-                  {t.contact?.message || "Mensaje"}
+                  {t.contact?.message || 'Mensaje'}
                 </label>
                 <textarea
                   id="message"
-                  className="flex min-h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-                  placeholder={t.contact?.messagePlaceholder || "Tu mensaje..."}
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  className="flex min-h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  placeholder={t.contact?.messagePlaceholder || 'Tu mensaje...'}
                 ></textarea>
               </motion.div>
+
+              {/* Anti-spam y sin redirección */}
+              <input type="hidden" name="_captcha" value="false" />
+              <input type="text" name="_honey" style={{ display: 'none' }} />
+
               <motion.div className="mt-4" variants={fadeIn}>
                 <Button type="submit" className="w-full bg-primary/90 hover:bg-primary transition-all">
-                  {t.contact?.send || "Enviar Mensaje"}
+                  {status === 'enviando'
+                    ? t.contact?.sending || 'Enviando...'
+                    : t.contact?.send || 'Enviar Mensaje'}
                 </Button>
+                {status === 'enviado' && (
+                  <p className="text-green-500 text-center mt-2">✅ Mensaje enviado con éxito</p>
+                )}
+                {status === 'error' && (
+                  <p className="text-red-500 text-center mt-2">❌ Ocurrió un error al enviar</p>
+                )}
               </motion.div>
             </motion.form>
           </div>
         </motion.section>
       </main>
 
-      <footer className="py-6 text-center text-sm text-muted-foreground border-t bg-background">
-        <div className="container">{t.footer?.builtWith || "Construido con"} Next.js, Tailwind CSS, y Lucide.</div>
+      <footer className="border-t py-6 md:py-10">
+        <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <div>
+            <div className="font-bold text-lg">
+              <span className="text-primary">Danyelle</span>Dev
+            </div>
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Danyelle Giraldo. {t.footer?.rights || "Todos los derechos reservados."}
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="transition-all">
+              <Button variant="ghost" size="icon" asChild>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                  <Github className="h-5 w-5" />
+                  <span className="sr-only">GitHub</span>
+                </a>
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1, rotate: -5 }} className="transition-all">
+              <Button variant="ghost" size="icon" asChild>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="h-5 w-5" />
+                  <span className="sr-only">LinkedIn</span>
+                </a>
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="transition-all">
+              <Button variant="ghost" size="icon" asChild>
+                <a href="mailto:danyellesgiraldoj@gmail.com">
+                  <Mail className="h-5 w-5" />
+                  <span className="sr-only">Email</span>
+                </a>
+              </Button>
+            </motion.div>
+          </div>
+        </div>
       </footer>
     </div>
   )
