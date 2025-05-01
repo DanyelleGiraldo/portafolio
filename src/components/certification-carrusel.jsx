@@ -8,7 +8,6 @@ import { Download } from "lucide-react"
 export function CertificationCarousel({ certifications, translations }) {
   const [expanded, setExpanded] = useState(false)
 
-  // Altura fija para el carrusel
   const carouselHeight = expanded ? "auto" : "400px"
 
   return (

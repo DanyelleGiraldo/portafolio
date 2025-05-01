@@ -24,6 +24,7 @@ import { MemoryGame } from "../components/memory-game"
 import { CertificationCarousel } from "../components/certification-carrusel"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import fotoperfil from './img/fp.png';
 import { getProjects } from "../components/data/projects"
 import { getEducation, getCvData, getSoftSkills } from "../components/data/education"
 
@@ -38,31 +39,40 @@ export default function Portfolio() {
   const [softSkills, setSoftSkills] = useState(getSoftSkills("es"))
 
   useEffect(() => {
+    // Función para cargar el idioma y los datos relacionados
     const loadLanguageData = () => {
+      // Recuperar preferencia de idioma del localStorage
       const savedLanguage = localStorage.getItem("language") || "es"
 
-      console.log("Cargando idioma:", savedLanguage)
+      console.log("Cargando idioma:", savedLanguage) // Para depuración
 
+      // Actualizar estados
       setLanguage(savedLanguage)
       setT(getTranslations(savedLanguage))
 
+      // Cargar proyectos según el idioma actual
       const currentProjects = getProjects(savedLanguage)
-      console.log(`Proyectos cargados (${savedLanguage}):`, currentProjects.length)
+      console.log(`Proyectos cargados (${savedLanguage}):`, currentProjects.length) // Para depuración
       setProjectsList(currentProjects)
 
+      // Cargar datos de educación según el idioma actual
       const currentEducation = getEducation(savedLanguage)
-      console.log(`Datos de educación cargados (${savedLanguage}):`, currentEducation.length)
+      console.log(`Datos de educación cargados (${savedLanguage}):`, currentEducation.length) // Para depuración
       setEducationList(currentEducation)
 
+      // Cargar datos del CV según el idioma actual
       const currentCvData = getCvData(savedLanguage)
       setCvData(currentCvData)
 
+      // Cargar habilidades blandas según el idioma actual
       const currentSoftSkills = getSoftSkills(savedLanguage)
       setSoftSkills(currentSoftSkills)
     }
 
+    // Cargar datos iniciales
     loadLanguageData()
 
+    // Observador de intersección para detectar secciones visibles
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -74,29 +84,34 @@ export default function Portfolio() {
       { threshold: 0.5 },
     )
 
+    // Observar todas las secciones
     document.querySelectorAll("section[id]").forEach((section) => {
       observer.observe(section)
     })
 
+    // Escuchar cambios de idioma
     const handleLanguageChange = (event) => {
+      // Si el evento tiene detail, usar esa información
       if (event.detail && event.detail.language) {
         const newLang = event.detail.language
-        console.log("Cambio de idioma detectado:", newLang)
+        console.log("Cambio de idioma detectado:", newLang) // Para depuración
 
         setLanguage(newLang)
         setT(getTranslations(newLang))
 
         const newProjects = getProjects(newLang)
-        console.log(`Nuevos proyectos (${newLang}):`, newProjects.length)
+        console.log(`Nuevos proyectos (${newLang}):`, newProjects.length) // Para depuración
         setProjectsList(newProjects)
 
         const newEducation = getEducation(newLang)
-        console.log(`Nuevos datos de educación (${newLang}):`, newEducation.length)
+        console.log(`Nuevos datos de educación (${newLang}):`, newEducation.length) // Para depuración
         setEducationList(newEducation)
 
+        // Actualizar datos del CV
         const newCvData = getCvData(newLang)
         setCvData(newCvData)
 
+        // Actualizar habilidades blandas
         const newSoftSkills = getSoftSkills(newLang)
         setSoftSkills(newSoftSkills)
       }
@@ -110,6 +125,7 @@ export default function Portfolio() {
     }
   }, [])
 
+  // Variantes para animaciones
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -138,6 +154,7 @@ export default function Portfolio() {
     { href: "#contacto", label: t.nav?.contact || "Contacto" },
   ]
 
+  // Función para renderizar el icono correcto para habilidades blandas
   const renderSoftSkillIcon = (iconName) => {
     switch (iconName) {
       case "users":
@@ -171,7 +188,7 @@ export default function Portfolio() {
         <div className="container flex h-16 items-center justify-between">
           <div className="font-bold text-xl">
             <a href="/" className="flex items-center gap-1 hover:text-primary transition-colors">
-              <span className="text-primary">Dev</span>Portfolio
+              <span className="text-primary">Danyelle</span>Dev
             </a>
           </div>
 
@@ -276,14 +293,14 @@ export default function Portfolio() {
             whileHover={{ scale: 1.05, rotate: 5 }}
           >
             <img
-              src="/placeholder.svg?height=128&width=128"
+              src= {fotoperfil}
               alt="Foto de perfil"
               className="object-cover w-full h-full"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
           </motion.div>
           <motion.h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4" variants={fadeIn}>
-            {t.hero?.greeting || "Hola, soy"} <span className="text-primary animate-pulse">Tu Nombre</span>
+            {t.hero?.greeting || "Hola, soy"} <span className="text-primary animate-pulse">Danyelle Giraldo</span>
           </motion.h1>
           <motion.h2 className="text-xl md:text-2xl text-muted-foreground mb-6" variants={fadeIn}>
             {t.hero?.role || "Desarrollador Full Stack"}
@@ -482,19 +499,20 @@ export default function Portfolio() {
             variants={staggerContainer}
           >
             {[
-              { name: "JavaScript", level: 90 },
-              { name: "TypeScript", level: 85 },
-              { name: "React", level: 90 },
-              { name: "Next.js", level: 85 },
-              { name: "Node.js", level: 80 },
-              { name: "CSS/Tailwind", level: 85 },
-              { name: "SQL", level: 75 },
+              { name: "Java / Spring Boot", level: 90 },
+              { name: "SQL (MySQL / PostgreSQL)", level: 85 },
+              { name: "TypeScript", level: 80 },
+              { name: "React", level: 75 },
+              { name: "Node.js", level: 70 },
+              { name: "Next.js", level: 70 },
+              { name: "MongoDB", level: 65 },
+              { name: "Anaconda / Jupyter", level: 65 },
+              { name: "Firebase", level: 70 },
               { name: "Git", level: 80 },
-              { name: "Docker", level: 70 },
-              { name: "AWS", level: 65 },
-              { name: "UI/UX", level: 75 },
-              { name: "Testing", level: 70 },
-            ].map((skill, index) => (
+              { name: "Docker", level: 75 },
+              { name: "AWS (Lambda / S3)", level: 65 },
+            ]
+            .map((skill, index) => (
               <motion.div
                 key={index}
                 className="bg-card rounded-lg p-6 border border-border/50 hover:border-primary/50 transition-all hover:shadow-lg group"
@@ -680,7 +698,7 @@ export default function Portfolio() {
                   <input
                     id="name"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-                    placeholder={t.contact?.namePlaceholder || "Tu nombre"}
+                    placeholder={t.contact?.namePlaceholder || "Danyelle Giraldo"}
                   />
                 </motion.div>
                 <motion.div className="space-y-2" variants={fadeIn}>
